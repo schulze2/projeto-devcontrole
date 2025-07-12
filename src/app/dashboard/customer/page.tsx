@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 
 import Link from "next/link";
 import { CardCustomer } from "./components/card";
-import prismaClient from '@/lib/prisma'
+import prismaClient from "@/lib/prisma";
 
 export default async function Customer() {
   const session = await getServerSession(authOptions);
@@ -15,10 +15,10 @@ export default async function Customer() {
   }
 
   const customers = await prismaClient.customer.findMany({
-    where:{
-      userId: session.user.id
-    }
-  })
+    where: {
+      userId: session.user.id,
+    },
+  });
 
   // console.log('==============')
   // console.log(customers)
@@ -37,14 +37,17 @@ export default async function Customer() {
         </div>
 
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-2">
-          
-          {customers.map((customer) =>(
+          {customers.map((customer) => (
             <CardCustomer key={customer.id} customer={customer} />
           ))}
-
         </section>
-      </main>
 
+        {customers.length === 0 && (
+          <h1 className="text-gray-600">
+            Você ainda não possui nenhum cliente.
+          </h1>
+        )}
+      </main>
     </Container>
   );
 }
