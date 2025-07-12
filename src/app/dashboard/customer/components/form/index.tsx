@@ -4,6 +4,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/input";
+import { api } from "@/lib/api";
+import { useRouter } from "next/navigation";
 
 const schema = z.object({
   name: z.string().min(1, "O campo nome é obrigatório"),
@@ -25,7 +27,7 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export function NewCustomerForm() {
+export function NewCustomerForm({ userId }: { userId: string }) {
   const {
     register,
     handleSubmit,
@@ -34,12 +36,25 @@ export function NewCustomerForm() {
     resolver: zodResolver(schema),
   });
 
-  function handleRegisterCustomer(data: FormData){
-    console.log(data)
-  } 
+  const router = useRouter();
+
+  async function handleRegisterCustomer(data: FormData) {
+    await api.post("/api/customer", {
+      name: data.name,
+      phone: data.phone,
+      email: data.email,
+      address: data.address,
+      userId: userId,
+    });
+
+    router.replace("/dashboard/customer");
+  }
 
   return (
-    <form className="flex flex-col mt-6" onSubmit={handleSubmit(handleRegisterCustomer)}>
+    <form
+      className="flex flex-col mt-6"
+      onSubmit={handleSubmit(handleRegisterCustomer)}
+    >
       <label className="mb-1 text-lg font-medium">Nome Completo:</label>
       <Input
         type="text"
@@ -80,7 +95,10 @@ export function NewCustomerForm() {
         register={register}
       />
 
-      <button type="submit" className="bg-blue-500 my-4 px-2 h-11 rounded text-white font-bold">
+      <button
+        type="submit"
+        className="bg-blue-500 my-4 px-2 h-11 rounded text-white font-bold"
+      >
         Cadastrar
       </button>
     </form>
