@@ -20,9 +20,9 @@ export default async function Customer() {
     }
   })
 
-  console.log('==============')
-  console.log(customers)
-  console.log('===============')
+  // console.log('==============')
+  // console.log(customers)
+  // console.log('===============')
   return (
     <Container>
       <main className="mt-9 mb-2">

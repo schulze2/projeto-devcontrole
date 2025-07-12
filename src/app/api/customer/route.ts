@@ -3,6 +3,42 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prismaClient from "@/lib/prisma";
 
+//  Rota para deletar um cliente
+export async function DELETE(request: Request) {
+  const session = await getServerSession(authOptions);
+  if (!session || !session.user) {
+    return NextResponse.json({ error: "Not authorized" }, { status: 401 });
+  }
+
+  const { searchParams } = new URL(request.url);
+  // localhost:3000/api/customer?id=123
+  const userId = searchParams.get("id");
+
+  if (!userId) {
+    return NextResponse.json(
+      { error: "Failed delete customer" },
+      { status: 400 }
+    );
+  }
+
+  try {
+    await prismaClient.customer.delete({
+      where: {
+        id: userId as string,
+      },
+    });
+
+    return NextResponse.json({ message: "Cliente deletado com sucesso!" });
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json(
+      { error: "Failed delete customer" },
+      { status: 400 }
+    );
+  }
+}
+
+// Rota para cadstrar um cliente
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
 
