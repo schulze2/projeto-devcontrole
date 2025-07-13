@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import prismaClient from "@/lib/prisma";
+import { string } from "zod";
 
 export default async function NewTicket() {
   const session = await getServerSession(authOptions);
@@ -19,16 +20,28 @@ export default async function NewTicket() {
     },
   });
 
-  async function handleRegisterTicket(formData: FormData){
-    "use server"
+  async function handleRegisterTicket(formData: FormData) {
+    "use server";
 
-    const name = formData.get("name")
-    const description = formData.get("description")
-    const customerId = formData.get("customer")
+    const name = formData.get("name");
+    const description = formData.get("description");
+    const customerId = formData.get("customer");
 
-    if(!name || !description || !customerId){
+    if (!name || !description || !customerId) {
       return;
     }
+
+    await prismaClient.ticket.create({
+      data: {
+        name: name as string,
+        description: description as string,
+        customerId: customerId as string,
+        status: "ABERTO",
+        userId: session?.user.id,
+      },
+    });
+
+    redirect("/dashboard");
   }
 
   return (
@@ -67,9 +80,9 @@ export default async function NewTicket() {
               <label className="mb-1 font-medium text-lg">
                 Selecione o cliente
               </label>
-              <select 
-              className="w-full border-2 rounded-md px-2 mb-2 h-11 resize-none bg-white"
-              name="customer"
+              <select
+                className="w-full border-2 rounded-md px-2 mb-2 h-11 resize-none bg-white"
+                name="customer"
               >
                 {customers.map((customer) => (
                   <option key={customer.id} value={customer.id}>
