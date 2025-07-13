@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/header";
-import {AuthProvider} from '@/providers/auth'
+import { AuthProvider } from "@/providers/auth";
+import { ModalProvider } from "@/providers/modal";
 
-const inter = Inter({subsets: ['latin']})
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Dev Controle - Seu sistema de gerenciamento",
@@ -18,12 +19,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${inter.className} antialiased`}
-      >
+      <body className={`${inter.className} antialiased`}>
         <AuthProvider>
-          <Header />
-          {children}
+          <ModalProvider>
+            <Header />
+            {children}
+          </ModalProvider>
         </AuthProvider>
       </body>
     </html>
